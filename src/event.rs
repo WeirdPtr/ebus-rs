@@ -1,6 +1,8 @@
+#[cfg(feature = "uuid")]
 use uuid::Uuid;
 
 pub struct Event<T> {
+    #[cfg(feature = "uuid")]
     uuid: String,
     pub data: T,
 }
@@ -8,6 +10,7 @@ pub struct Event<T> {
 impl<T> Event<T> {
     pub fn new(data: T) -> Event<T> {
         Event {
+            #[cfg(feature = "uuid")]
             uuid: Uuid::new_v4().to_string(),
             data,
         }
@@ -17,6 +20,7 @@ impl<T> Event<T> {
         return &self.data;
     }
 
+    #[cfg(feature = "uuid")]
     pub fn get_uuid(&self) -> String {
         return self.uuid.clone();
     }

@@ -1,20 +1,19 @@
+#[cfg(feature = "uuid")]
 use uuid::Uuid;
 
 use super::{event::Event, subscriber::EventBusSubscriber};
 
 pub struct EventBus<T> {
+    #[cfg(feature = "uuid")]
     uuid: String,
     events: Vec<Event<T>>,
     pub subscribers: Vec<Box<dyn EventBusSubscriber<InputDataType = T>>>,
 }
 
 impl<T> EventBus<T> {
-    pub fn get_uuid(&self) -> String {
-        return self.uuid.clone();
-    }
-
     pub fn new() -> EventBus<T> {
         EventBus {
+            #[cfg(feature = "uuid")]
             uuid: Uuid::new_v4().to_string(),
             events: Vec::new(),
             subscribers: Vec::new(),
@@ -44,6 +43,11 @@ impl<T> EventBus<T> {
 
     pub fn clear_event_queue(&mut self) {
         self.events.clear();
+    }
+
+    #[cfg(feature = "uuid")]
+    pub fn get_uuid(&self) -> String {
+        return self.uuid.clone();
     }
 }
 

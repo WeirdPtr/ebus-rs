@@ -1,6 +1,6 @@
 [package]
 name = "ebus"
-version = "0.1.0"
+version = "1.0.0"
 authors = ["WeirdPtr <WeirdPtr@WeirdPtr.com>"]
 description = "Basic Event Bus implementation"
 edition = "2021"
@@ -14,3 +14,7 @@ uuid = { version = "1.2.1", features = ["v4", "fast-rng"] }
 
 [dev-dependencies]
 tokio = {version="1.21.2", features=["full"]}
+
+[features]
+full = ["uuid"]
+uuid = []
