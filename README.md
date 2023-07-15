@@ -98,4 +98,4 @@ If you have a suggestion that would make this better, please fork the repo and c
 
 ## License
 
-Distributed under the MIT License. See [`LICENSE`](https://github.com/WeirdPtr/ebus/blob/master/LICENSE) for more information.
+Distributed under the MIT or Apache 2 License. See [`LICENSE-MIT`](https://github.com/WeirdPtr/ebus/blob/master/LICENSE-MIT) or [`LICENSE-APACHE`](https://github.com/WeirdPtr/ebus/blob/master/LICENSE-APACHE) for more information.
