@@ -4,9 +4,10 @@ version = "1.1.0"
 authors = ["WeirdPtr <WeirdPtr@WeirdPtr.com>"]
 description = "Basic Event Bus implementation"
 edition = "2021"
-license = "MIT"
+license = "MIT OR Apache-2.0"
 repository = "https://github.com/WeirdPtr/ebus"
 keywords = ["eventbus", "events", "lightweight"]
+include = ["src/**/*", "LICENSE-MIT.md", "LICENSE-APACHE.md", "README.md"]
 
 [dependencies]
 async-trait = "0.1"
