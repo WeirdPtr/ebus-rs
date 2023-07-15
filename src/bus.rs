@@ -1,57 +1,55 @@
-#[cfg(feature = "uuid")]
-use uuid::Uuid;
+use crate::{event::Event, EventBusSubscriber};
 
-use super::{event::Event, subscriber::EventBusSubscriber};
-
-pub struct EventBus<T> {
-    #[cfg(feature = "uuid")]
-    uuid: String,
+pub struct EventBus<T>
+where
+    T: Send + Sync + 'static,
+{
     events: Vec<Event<T>>,
     pub subscribers: Vec<Box<dyn EventBusSubscriber<InputDataType = T>>>,
 }
 
-impl<T> EventBus<T> {
-    pub fn new() -> EventBus<T> {
-        EventBus {
-            #[cfg(feature = "uuid")]
-            uuid: Uuid::new_v4().to_string(),
+impl<T: Send + Sync> EventBus<T> {
+    pub const fn new() -> Self {
+        Self {
             events: Vec::new(),
             subscribers: Vec::new(),
         }
     }
 
-    pub async fn process_event_queue(&mut self) {
+    pub fn queue_event(&mut self, message: Event<T>) {
+        self.events.push(message);
+    }
+
+    pub fn subscribe_boxed<S: EventBusSubscriber<InputDataType = T> + 'static>(
+        &mut self,
+        listener: Box<S>,
+    ) {
+        self.subscribers.push(listener);
+    }
+
+    pub fn subscribe<S: EventBusSubscriber<InputDataType = T> + 'static>(&mut self, listener: S) {
+        self.subscribe_boxed(Box::new(listener));
+    }
+
+    pub fn clear_queue(&mut self) {
+        self.events.clear();
+    }
+
+    pub async fn process_queue(&mut self) {
         for event in self.events.drain(..) {
-            for listener in self.subscribers.iter_mut() {
+            for listener in &mut self.subscribers {
                 listener.on_event_publish(&event).await;
             }
         }
     }
 
-    pub fn publish(&mut self, message: Event<T>) {
-        self.events.push(message);
-    }
-
-    pub async fn publish_and_process(&mut self, message: Event<T>) {
-        self.events.push(message);
-        self.process_event_queue().await;
-    }
-
-    pub fn subscribe<R: EventBusSubscriber<InputDataType = T> + 'static>(&mut self, listener: R) {
-        self.subscribers.push(Box::new(listener));
-    }
-
-    pub fn clear_event_queue(&mut self) {
-        self.events.clear();
-    }
-
-    #[cfg(feature = "uuid")]
-    pub fn get_uuid(&self) -> String {
-        return self.uuid.clone();
+    pub async fn queue_and_publish(&mut self, message: Event<T>) {
+        self.queue_event(message);
+        self.process_queue().await;
     }
 }
 
-impl<T> Default for EventBus<T> {
+impl<T: Send + Sync> Default for EventBus<T> {
     fn default() -> Self {
         Self::new()
     }
