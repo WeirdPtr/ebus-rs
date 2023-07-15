@@ -1,6 +1,6 @@
 [package]
 name = "ebus"
-version = "1.0.0"
+version = "1.1.0"
 authors = ["WeirdPtr <WeirdPtr@WeirdPtr.com>"]
 description = "Basic Event Bus implementation"
 edition = "2021"
@@ -9,12 +9,7 @@ repository = "https://github.com/WeirdPtr/ebus"
 keywords = ["eventbus", "events", "lightweight"]
 
 [dependencies]
-async-trait = "0.1.58" 
-uuid = { version = "1.2.1", features = ["v4", "fast-rng"] }
+async-trait = "0.1"
 
 [dev-dependencies]
-tokio = {version="1.21.2", features=["full"]}
-
-[features]
-full = ["uuid"]
-uuid = []
+tokio = { version = "1.2", features = ["full"] }
