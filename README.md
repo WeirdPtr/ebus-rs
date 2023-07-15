@@ -4,7 +4,6 @@
   </a>
 </div>
 
-
 <div id="top"></div>
 <br />
 <div align="center">
@@ -27,7 +26,6 @@ This is a small Eventbus implementation that can be used to asynchronously trans
 
 - [Rust](https://www.rust-lang.org/)
 - [async-trait](https://crates.io/crates/async-trait/)
-- [uuid](https://crates.io/crates/uuid)
 
 ### Prerequisites
 
@@ -41,10 +39,9 @@ This is a small Eventbus implementation that can be used to asynchronously trans
 ### Basic Example
 
 ```rust
-use async_trait::async_trait;
-use ebus::{bus::EventBus, event::Event, subscriber::EventBusSubscriber};
+use ebus::{Event, EventBus, EventBusSubscriber};
 
-#[derive(Clone, Debug)]
+#[derive(Debug, Clone)]
 pub struct ExampleData {
     pub data: String,
 }
@@ -53,16 +50,14 @@ pub struct ExampleDataSubscriber {
     data: ExampleData,
 }
 
-#[async_trait]
+#[async_trait::async_trait]
 impl EventBusSubscriber for ExampleDataSubscriber {
     type InputDataType = ExampleData;
 
     async fn on_event_publish(&mut self, event: &Event<Self::InputDataType>) {
-        let data = event.data.to_owned();
+        println!("Received Data: {:#?}", event.data_ref());
 
-        println!("Received Data: {:#?}", data);
-
-        self.data = data;
+        self.data = event.data.clone();
     }
 }
 
@@ -79,11 +74,12 @@ async fn main() {
     example_bus.subscribe(subscriber);
 
     example_bus
-        .publish_and_process(Event::new(ExampleData {
+        .queue_and_publish(Event::new(ExampleData {
             data: "I am Data".to_owned(),
         }))
         .await;
 }
+
 ```
 
 ## Roadmap
