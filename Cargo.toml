@@ -1,6 +1,6 @@
 [package]
 name = "ebus"
-version = "1.1.1"
+version = "1.2.0"
 authors = ["WeirdPtr <WeirdPtr@WeirdPtr.com>"]
 description = "Basic Event Bus implementation"
 edition = "2021"
