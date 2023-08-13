@@ -5,9 +5,8 @@ pub struct ExampleData {
     pub data: String,
 }
 
-pub struct ExampleDataSubscriber {
-    data: ExampleData,
-}
+#[derive(Default)]
+pub struct ExampleDataSubscriber;
 
 #[async_subscriber]
 impl EventBusSubscriber for ExampleDataSubscriber {
@@ -15,8 +14,6 @@ impl EventBusSubscriber for ExampleDataSubscriber {
 
     async fn on_event_publish(&mut self, event: &Event<Self::InputDataType>) {
         println!("Received Data: {:#?}", event.data_ref());
-
-        self.data = event.data.clone();
     }
 }
 
@@ -24,17 +21,13 @@ impl EventBusSubscriber for ExampleDataSubscriber {
 async fn main() {
     let mut example_bus: EventBus<ExampleData> = EventBus::default();
 
-    let subscriber = ExampleDataSubscriber {
-        data: ExampleData {
-            data: "".to_owned(),
-        },
-    };
+    let subscriber = ExampleDataSubscriber::default();
 
     example_bus.subscribe(subscriber);
 
-    example_bus
-        .queue_and_process(Event::new(ExampleData {
-            data: "I am Data".to_owned(),
-        }))
-        .await;
+    let event = Event::new(ExampleData {
+        data: "Hello World!".to_owned(),
+    });
+
+    example_bus.queue_and_process(event).await;
 }
