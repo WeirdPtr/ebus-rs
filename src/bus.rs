@@ -20,26 +20,15 @@ impl<T: Send + Sync> EventBus<T> {
         self.events.push(message);
     }
 
-    pub fn subscribe_boxed<S: EventBusSubscriber<InputDataType = T> + 'static>(
-        &mut self,
-        listener: Box<S>,
-    ) {
-        self.subscribers.push(listener);
-    }
-
-    pub fn subscribe<S: EventBusSubscriber<InputDataType = T> + 'static>(&mut self, listener: S) {
-        self.subscribe_boxed(Box::new(listener));
+    pub fn subscribe<S: EventBusSubscriber<InputDataType = T> + 'static>(&mut self, listener: S)
+    where
+        S: Into<Box<S>>,
+    {
+        self.subscribers.push(listener.into());
     }
 
     pub fn clear_queue(&mut self) {
         self.events.clear();
-    }
-
-    #[inline]
-    async fn process_single(&mut self, message: Event<T>) {
-        for listener in &mut self.subscribers {
-            listener.on_event_publish(&message).await;
-        }
     }
 
     #[inline]
@@ -58,6 +47,13 @@ impl<T: Send + Sync> EventBus<T> {
 
     pub async fn force_process_single(&mut self, message: Event<T>) {
         self.process_single(message).await;
+    }
+
+    #[inline]
+    async fn process_single(&mut self, message: Event<T>) {
+        for listener in &mut self.subscribers {
+            listener.on_event_publish(&message).await;
+        }
     }
 }
 
