@@ -35,6 +35,14 @@ impl<T: Send + Sync> EventBus<T> {
         self.events.clear();
     }
 
+    #[inline]
+    async fn process_single(&mut self, message: Event<T>) {
+        for listener in &mut self.subscribers {
+            listener.on_event_publish(&message).await;
+        }
+    }
+
+    #[inline]
     pub async fn process_queue(&mut self) {
         for event in self.events.drain(..) {
             for listener in &mut self.subscribers {
@@ -46,6 +54,10 @@ impl<T: Send + Sync> EventBus<T> {
     pub async fn queue_and_process(&mut self, message: Event<T>) {
         self.queue(message);
         self.process_queue().await;
+    }
+
+    pub async fn force_process_single(&mut self, message: Event<T>) {
+        self.process_single(message).await;
     }
 }
 
