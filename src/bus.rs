@@ -16,7 +16,7 @@ impl<T: Send + Sync> EventBus<T> {
         }
     }
 
-    pub fn queue_event(&mut self, message: Event<T>) {
+    pub fn queue(&mut self, message: Event<T>) {
         self.events.push(message);
     }
 
@@ -43,8 +43,8 @@ impl<T: Send + Sync> EventBus<T> {
         }
     }
 
-    pub async fn queue_and_publish(&mut self, message: Event<T>) {
-        self.queue_event(message);
+    pub async fn queue_and_process(&mut self, message: Event<T>) {
+        self.queue(message);
         self.process_queue().await;
     }
 }
