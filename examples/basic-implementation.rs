@@ -1,4 +1,4 @@
-use ebus::{Event, EventBus, EventBusSubscriber};
+use ebus::{async_subscriber, Event, EventBus, EventBusSubscriber};
 
 #[derive(Debug, Clone)]
 pub struct ExampleData {
@@ -9,7 +9,7 @@ pub struct ExampleDataSubscriber {
     data: ExampleData,
 }
 
-#[async_trait::async_trait]
+#[async_subscriber]
 impl EventBusSubscriber for ExampleDataSubscriber {
     type InputDataType = ExampleData;
 
@@ -33,7 +33,7 @@ async fn main() {
     example_bus.subscribe(subscriber);
 
     example_bus
-        .queue_and_publish(Event::new(ExampleData {
+        .queue_and_process(Event::new(ExampleData {
             data: "I am Data".to_owned(),
         }))
         .await;

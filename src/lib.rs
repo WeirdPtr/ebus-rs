@@ -3,10 +3,12 @@
 pub(crate) mod bus;
 pub(crate) mod event;
 
+pub use async_trait::async_trait as async_subscriber;
+
 pub type EventBus<T> = bus::EventBus<T>;
 pub type Event<T> = event::Event<T>;
 
-#[async_trait::async_trait]
+#[async_subscriber]
 pub trait EventBusSubscriber: Send + Sync + 'static {
     type InputDataType;
 
