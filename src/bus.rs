@@ -1,11 +1,11 @@
-use crate::{event::Event, EventBusSubscriber};
+use crate::Subscriber;
 
 pub struct EventBus<T>
 where
     T: Send + Sync + 'static,
 {
-    events: Vec<Event<T>>,
-    pub subscribers: Vec<Box<dyn EventBusSubscriber<InputDataType = T>>>,
+    events: Vec<T>,
+    pub subscribers: Vec<Box<dyn Subscriber<Input = T>>>,
 }
 
 impl<T: Send + Sync> EventBus<T> {
@@ -16,11 +16,11 @@ impl<T: Send + Sync> EventBus<T> {
         }
     }
 
-    pub fn queue(&mut self, message: Event<T>) {
+    pub fn queue(&mut self, message: T) {
         self.events.push(message);
     }
 
-    pub fn subscribe<S: EventBusSubscriber<InputDataType = T> + 'static>(&mut self, listener: S)
+    pub fn subscribe<S: Subscriber<Input = T> + 'static>(&mut self, listener: S)
     where
         S: Into<Box<S>>,
     {
@@ -40,17 +40,17 @@ impl<T: Send + Sync> EventBus<T> {
         }
     }
 
-    pub async fn queue_and_process(&mut self, message: Event<T>) {
+    pub async fn queue_and_process(&mut self, message: T) {
         self.queue(message);
         self.process_queue().await;
     }
 
-    pub async fn force_process_single(&mut self, message: Event<T>) {
+    pub async fn force_process_single(&mut self, message: T) {
         self.process_single(message).await;
     }
 
     #[inline]
-    async fn process_single(&mut self, message: Event<T>) {
+    async fn process_single(&mut self, message: T) {
         for listener in &mut self.subscribers {
             listener.on_event_publish(&message).await;
         }
