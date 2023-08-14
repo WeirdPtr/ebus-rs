@@ -14,3 +14,7 @@ async-trait = "0.1"
 
 [dev-dependencies]
 tokio = { version = "1.2", features = ["full"] }
+
+[features]
+default = ["async_subscriber"]
+async_subscriber = []
