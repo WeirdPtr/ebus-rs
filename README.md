@@ -47,7 +47,7 @@ impl Subscriber for ExampleSubscriber {
 #[tokio::main]
 async fn main() {
     // Create a new event bus
-    let mut event_bus: EventBus<String> = EventBus::default();
+    let mut event_bus = EventBus::default();
 
     // Create a new subscriber and subscribe it to the event bus
     let subscriber = ExampleSubscriber::default();
@@ -55,7 +55,7 @@ async fn main() {
 
     // Create an event and queue it for processing
     let event_data = "Hello World!".to_owned();
-    event_bus.queue_and_process(event_data.into()).await;
+    event_bus.queue_and_process(event_data).await;
 }
 ```
 
