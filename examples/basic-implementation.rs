@@ -1,33 +1,27 @@
-use ebus::{async_subscriber, Event, EventBus, EventBusSubscriber};
-
-#[derive(Debug, Clone)]
-pub struct ExampleData {
-    pub data: String,
-}
+use ebus::{async_subscriber, EventBus, Subscriber};
 
 #[derive(Default)]
-pub struct ExampleDataSubscriber;
+pub struct ExampleSubscriber;
 
 #[async_subscriber]
-impl EventBusSubscriber for ExampleDataSubscriber {
-    type InputDataType = ExampleData;
+impl Subscriber for ExampleSubscriber {
+    type Input = String;
 
-    async fn on_event_publish(&mut self, event: &Event<Self::InputDataType>) {
-        println!("Received Data: {:#?}", event.data_ref());
+    async fn on_event_publish(&mut self, event: &Self::Input) {
+        println!("Received Data: {:#?}", event);
     }
 }
 
 #[tokio::main]
 async fn main() {
-    let mut example_bus: EventBus<ExampleData> = EventBus::default();
+    // Create a new event bus
+    let mut event_bus = EventBus::default();
 
-    let subscriber = ExampleDataSubscriber::default();
+    // Create a new subscriber and subscribe it to the event bus
+    let subscriber = ExampleSubscriber::default();
+    event_bus.subscribe(subscriber);
 
-    example_bus.subscribe(subscriber);
-
-    let event = Event::new(ExampleData {
-        data: "Hello World!".to_owned(),
-    });
-
-    example_bus.queue_and_process(event).await;
+    // Create an event and queue it for processing
+    let event_data = "Hello World!".to_owned();
+    event_bus.queue_and_process(event_data).await;
 }
